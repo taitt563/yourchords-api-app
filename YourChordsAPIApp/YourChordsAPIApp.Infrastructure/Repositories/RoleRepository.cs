@@ -12,26 +12,26 @@ namespace YourChordsAPIApp.Infrastructure.Repositories
 {
     public class RoleRepository : IRolesRepository
     {
-        private readonly YourChordsDbContext _context;
+        private readonly Data.yourchordsdbContext _context;
 
-        public RoleRepository(YourChordsDbContext context) 
+        public RoleRepository(Data.yourchordsdbContext context) 
         {
             _context = context;
         }
         public async Task<Role> CreateAsync(Role role)
         {
-            await _context.Role.AddAsync(role);
+            await _context.Roles.AddAsync(role);
             await _context.SaveChangesAsync();
             return role;
         }
 
         public async Task<int> DeleteAsync(int id)
         {
-            var role = await _context.Role.FirstOrDefaultAsync(model => model.Id == id);
+            var role = await _context.Roles.FirstOrDefaultAsync(model => model.Id == id);
 
             if (role != null)
             {
-                _context.Role.Remove(role);
+                _context.Roles.Remove(role);
                 await _context.SaveChangesAsync();
                 return 1; 
             }
@@ -41,17 +41,17 @@ namespace YourChordsAPIApp.Infrastructure.Repositories
 
         public async Task<List<Role>> GetAllBlogAsync()
         {
-            return await _context.Role.ToListAsync();
+            return await _context.Roles.ToListAsync();
         }
 
         public async Task<Role> GetByIdAsync(int id)
         {
-            return await _context.Role.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
+            return await _context.Roles!.FindAsync(id);
         }
 
         public async Task<int> UpdateAsync(int id, Role role)
         {
-            var existingRole = await _context.Role.FirstOrDefaultAsync(r => r.Id == id);
+            var existingRole = await _context.Roles.FirstOrDefaultAsync(r => r.Id == id);
 
             if (existingRole != null)
             {

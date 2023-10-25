@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace YourChordsAPIApp.Domain.Entities
+{
+    public partial class SongChord
+    {
+        public int Id { get; set; }
+        public int SongId { get; set; }
+        public int ChordId { get; set; }
+
+        public virtual Chord Chord { get; set; } = null!;
+        public virtual Song Song { get; set; } = null!;
+    }
+}

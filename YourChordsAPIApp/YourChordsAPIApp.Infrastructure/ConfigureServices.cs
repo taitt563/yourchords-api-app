@@ -17,9 +17,9 @@ namespace YourChordsAPIApp.Infrastructure
     {
         public static IServiceCollection AddInfrastructureServices (this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<YourChordsDbContext>(options =>
+            services.AddDbContext<yourchordsdbContext>(options =>
             {
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), builder => builder.MigrationsAssembly(typeof(YourChordsDbContext).Assembly.FullName));
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), builder => builder.MigrationsAssembly(typeof(yourchordsdbContext).Assembly.FullName));
             });
 
             services.AddTransient<IRolesRepository, RoleRepository>();

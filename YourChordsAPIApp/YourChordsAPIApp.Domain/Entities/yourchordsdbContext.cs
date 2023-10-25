@@ -1,12 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using YourChordsAPIApp.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace YourChordsAPIApp.Infrastructure.Data
+namespace YourChordsAPIApp.Domain.Entities
 {
     public partial class yourchordsdbContext : DbContext
     {

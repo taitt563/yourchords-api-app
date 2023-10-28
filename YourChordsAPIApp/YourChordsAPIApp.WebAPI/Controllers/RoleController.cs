@@ -1,16 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using YourChordsAPIApp.Application.Roles.Commands.CreateRole;
 using YourChordsAPIApp.Application.Roles.Commands.DeleteRole;
 using YourChordsAPIApp.Application.Roles.Commands.UpdateRole;
 using YourChordsAPIApp.Application.Roles.Queries.GetRoleById;
 using YourChordsAPIApp.Application.Roles.Queries.GetRoles;
+using YourChordsAPIApp.Domain.Endpoints;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace YourChordsAPIApp.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    
     [ApiController]
+    [Route("api/[controller]")]
     public class RoleController : ApiControllerBase
     {
         [HttpGet]
@@ -33,6 +34,8 @@ namespace YourChordsAPIApp.WebAPI.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddNewRole (CreateRoleCommand command)
         {
             var createdRole = await Mediator.Send(command);

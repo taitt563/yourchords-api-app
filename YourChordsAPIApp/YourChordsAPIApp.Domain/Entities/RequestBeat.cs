@@ -9,7 +9,7 @@ namespace YourChordsAPIApp.Domain.Entities
         public int RequestId { get; set; }
         public int BeatId { get; set; }
         public string? Description { get; set; }
-        public int? Quantity { get; set; }
+        public int Quantity { get; set; }
 
         public virtual Beat Beat { get; set; } = null!;
         public virtual Request Request { get; set; } = null!;

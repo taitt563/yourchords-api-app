@@ -9,10 +9,10 @@ namespace YourChordsAPIApp.Domain.Repositories
 {
     public interface IRolesRepository
     {
-        Task<List<Role>> GetAllBlogAsync();
-        Task<Role> GetByIdAsync(int id);
-        Task<Role> CreateAsync(Role role);
-        Task<int> UpdateAsync(int id, Role role);
+        Task<List<UserRole>> GetAllBlogAsync();
+        Task<UserRole> GetByIdAsync(int id);
+        Task<UserRole> CreateAsync(UserRole role);
+        Task<int> UpdateAsync(int id, UserRole role);
         Task<int> DeleteAsync(int id);
 
     }

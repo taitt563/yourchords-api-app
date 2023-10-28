@@ -14,19 +14,21 @@ namespace YourChordsAPIApp.Domain.Entities
         }
 
         public int Id { get; set; }
-        public string BeatName { get; set; } = null!;
+        public string Name { get; set; } = null!;
         public string? Description { get; set; }
-        public string? AudioLink { get; set; }
+        public string AudioLink { get; set; } = null!;
         public string Tone { get; set; } = null!;
         public int Tempo { get; set; }
         public int Duration { get; set; }
         public decimal Price { get; set; }
-        public DateTime DateReleased { get; set; }
-        public DateTime? CreatedAt { get; set; }
+        public int YearReleased { get; set; }
+        public DateTime CreatedAt { get; set; }
         public int CreatedBy { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime? LastModified { get; set; }
+        public int? LastModifiedBy { get; set; }
         public bool IsSold { get; set; }
         public bool IsPrivate { get; set; }
+        public bool IsDeleted { get; set; }
 
         public virtual UserAccount CreatedByNavigation { get; set; } = null!;
         public virtual ICollection<BeatGenre> BeatGenres { get; set; }

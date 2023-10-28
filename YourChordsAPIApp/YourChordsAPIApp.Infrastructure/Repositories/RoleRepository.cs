@@ -5,33 +5,32 @@ using System.Text;
 using System.Threading.Tasks;
 using YourChordsAPIApp.Domain.Entities;
 using YourChordsAPIApp.Domain.Repositories;
-using YourChordsAPIApp.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace YourChordsAPIApp.Infrastructure.Repositories
 {
     public class RoleRepository : IRolesRepository
     {
-        private readonly Data.yourchordsdbContext _context;
+        private readonly YourChordsApiAppVer2DbContext _context;
 
-        public RoleRepository(Data.yourchordsdbContext context) 
+        public RoleRepository(YourChordsApiAppVer2DbContext context) 
         {
             _context = context;
         }
-        public async Task<Role> CreateAsync(Role role)
+        public async Task<UserRole> CreateAsync(UserRole role)
         {
-            await _context.Roles.AddAsync(role);
+            await _context.UserRoles.AddAsync(role);
             await _context.SaveChangesAsync();
             return role;
         }
 
         public async Task<int> DeleteAsync(int id)
         {
-            var role = await _context.Roles.FirstOrDefaultAsync(model => model.Id == id);
+            var role = await _context.UserRoles.FirstOrDefaultAsync(model => model.Id == id);
 
             if (role != null)
             {
-                _context.Roles.Remove(role);
+                _context.UserRoles.Remove(role);
                 await _context.SaveChangesAsync();
                 return 1; 
             }
@@ -39,23 +38,23 @@ namespace YourChordsAPIApp.Infrastructure.Repositories
             return 0;
         }
 
-        public async Task<List<Role>> GetAllBlogAsync()
+        public async Task<List<UserRole>> GetAllBlogAsync()
         {
-            return await _context.Roles.ToListAsync();
+            return await _context.UserRoles.ToListAsync();
         }
 
-        public async Task<Role> GetByIdAsync(int id)
+        public async Task<UserRole> GetByIdAsync(int id)
         {
-            return await _context.Roles!.FindAsync(id);
+            return await _context.UserRoles!.FindAsync(id);
         }
 
-        public async Task<int> UpdateAsync(int id, Role role)
+        public async Task<int> UpdateAsync(int id, UserRole role)
         {
-            var existingRole = await _context.Roles.FirstOrDefaultAsync(r => r.Id == id);
+            var existingRole = await _context.UserRoles.FirstOrDefaultAsync(r => r.Id == id);
 
             if (existingRole != null)
             {
-                existingRole.Name = role.Name;
+                existingRole.RoleName = role.RoleName;
                 existingRole.Description = role.Description;
 
                 await _context.SaveChangesAsync();

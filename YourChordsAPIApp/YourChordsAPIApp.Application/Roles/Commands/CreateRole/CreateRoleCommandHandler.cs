@@ -23,7 +23,7 @@ namespace YourChordsAPIApp.Application.Roles.Commands.CreateRole
         }
         public async Task<RolesVm> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
         {
-            var roleEntity = new Role() { Name = request.Name, Description = request.Description };
+            var roleEntity = new UserRole() { RoleName = request.Name, Description = request.Description };
             var result = await _rolesRepository.CreateAsync(roleEntity);
             return _mapper.Map<RolesVm>(result);
         }

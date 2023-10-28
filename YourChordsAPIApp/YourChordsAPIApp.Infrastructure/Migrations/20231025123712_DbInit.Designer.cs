@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using YourChordsAPIApp.Infrastructure.Data;
+using YourChordsAPIApp.Domain.Entities;
 
 #nullable disable
 
 namespace YourChordsAPIApp.Infrastructure.Migrations
 {
-    [DbContext(typeof(yourchordsdbContext))]
+    [DbContext(typeof(YourChordsApiAppVer2DbContext))]
     [Migration("20231025123712_DbInit")]
     partial class DbInit
     {

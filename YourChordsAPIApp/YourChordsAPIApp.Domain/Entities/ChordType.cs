@@ -11,7 +11,7 @@ namespace YourChordsAPIApp.Domain.Entities
         }
 
         public int Id { get; set; }
-        public string Name { get; set; } = null!;
+        public string TypeName { get; set; } = null!;
 
         public virtual ICollection<Chord> Chords { get; set; }
     }

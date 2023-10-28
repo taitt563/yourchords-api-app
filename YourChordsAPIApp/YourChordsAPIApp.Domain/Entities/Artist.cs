@@ -12,12 +12,13 @@ namespace YourChordsAPIApp.Domain.Entities
         }
 
         public int Id { get; set; }
-        public string ArtistName { get; set; } = null!;
+        public string Name { get; set; } = null!;
         public DateTime? Dob { get; set; }
         public string? Country { get; set; }
         public string? Bio { get; set; }
         public string? ProfilePic { get; set; }
-        public string? SocialMediaLink { get; set; }
+        public string? ExternalLink { get; set; }
+        public int? Popularity { get; set; }
 
         public virtual ICollection<ArtistGenre> ArtistGenres { get; set; }
         public virtual ICollection<SongArtist> SongArtists { get; set; }

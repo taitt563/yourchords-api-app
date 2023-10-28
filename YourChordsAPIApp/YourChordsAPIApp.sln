@@ -5,13 +5,13 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9366C348-5C8B-4DA9-B470-A2E0864CE3F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourChordsAPIApp.Domain", "YourChordsAPIApp.Domain\YourChordsAPIApp.Domain.csproj", "{9D9967ED-6B31-446E-812A-F776A386DA02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YourChordsAPIApp.Domain", "YourChordsAPIApp.Domain\YourChordsAPIApp.Domain.csproj", "{9D9967ED-6B31-446E-812A-F776A386DA02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourChordsAPIApp.Application", "YourChordsAPIApp.Application\YourChordsAPIApp.Application.csproj", "{5BA3125D-C216-43A1-B68C-4BAED8ACCDF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YourChordsAPIApp.Application", "YourChordsAPIApp.Application\YourChordsAPIApp.Application.csproj", "{5BA3125D-C216-43A1-B68C-4BAED8ACCDF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourChordsAPIApp.Infrastructure", "YourChordsAPIApp.Infrastructure\YourChordsAPIApp.Infrastructure.csproj", "{AD2B3CFB-B24F-457F-9E87-BFCC325E47B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YourChordsAPIApp.Infrastructure", "YourChordsAPIApp.Infrastructure\YourChordsAPIApp.Infrastructure.csproj", "{AD2B3CFB-B24F-457F-9E87-BFCC325E47B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourChordsAPIApp.WebAPI", "YourChordsAPIApp.WebAPI\YourChordsAPIApp.WebAPI.csproj", "{3D9FED56-35D1-43A7-ACD2-A274CF7D58EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YourChordsAPIApp.WebAPI", "YourChordsAPIApp.WebAPI\YourChordsAPIApp.WebAPI.csproj", "{3D9FED56-35D1-43A7-ACD2-A274CF7D58EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

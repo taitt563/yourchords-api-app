@@ -6,8 +6,8 @@ namespace YourChordsAPIApp.Domain.Entities
     public partial class Payment
     {
         public int Id { get; set; }
-        public DateTime? DatePayment { get; set; }
-        public string? Method { get; set; }
+        public DateTime DateCreated { get; set; }
+        public string Method { get; set; } = null!;
         public int RequestId { get; set; }
         public int UserId { get; set; }
         public decimal TotalPrice { get; set; }

@@ -3,13 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using YourChordsAPIApp.Infrastructure.Data;
+using YourChordsAPIApp.Domain.Entities;
 
 #nullable disable
 
 namespace YourChordsAPIApp.Infrastructure.Migrations
 {
-    [DbContext(typeof(yourchordsdbContext))]
+    [DbContext(typeof(YourChordsApiAppVer2DbContext))]
     partial class YourChordsDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

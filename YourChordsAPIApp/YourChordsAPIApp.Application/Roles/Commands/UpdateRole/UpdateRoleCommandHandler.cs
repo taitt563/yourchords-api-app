@@ -22,7 +22,7 @@ namespace YourChordsAPIApp.Application.Roles.Commands.UpdateRole
         }
         public async Task<int> Handle(UpdateRoleCommand request, CancellationToken cancellationToken)
         {
-            var updateRoleEntity = new Role () { Id = request.Id, Name = request.Name, Description = request.Description };
+            var updateRoleEntity = new UserRole () { Id = request.Id, RoleName = request.Name, Description = request.Description };
             return await _rolesRepository.UpdateAsync(request.Id, updateRoleEntity);
         }
     }

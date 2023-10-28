@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YourChordsAPIApp.Domain.Entities;
 using YourChordsAPIApp.Domain.Repositories;
-using YourChordsAPIApp.Infrastructure.Data;
 using YourChordsAPIApp.Infrastructure.Repositories;
 
 namespace YourChordsAPIApp.Infrastructure
@@ -17,9 +17,9 @@ namespace YourChordsAPIApp.Infrastructure
     {
         public static IServiceCollection AddInfrastructureServices (this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<yourchordsdbContext>(options =>
+            services.AddDbContext<YourChordsApiAppVer2DbContext>(options =>
             {
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), builder => builder.MigrationsAssembly(typeof(yourchordsdbContext).Assembly.FullName));
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), builder => builder.MigrationsAssembly(typeof(YourChordsApiAppVer2DbContext).Assembly.FullName));
             });
 
             services.AddTransient<IRolesRepository, RoleRepository>();

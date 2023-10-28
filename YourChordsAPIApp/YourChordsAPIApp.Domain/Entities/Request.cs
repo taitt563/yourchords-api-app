@@ -17,6 +17,7 @@ namespace YourChordsAPIApp.Domain.Entities
         public int OrderId { get; set; }
         public int UserId { get; set; }
 
+        public virtual Order Order { get; set; } = null!;
         public virtual UserAccount User { get; set; } = null!;
         public virtual ICollection<Payment> Payments { get; set; }
         public virtual ICollection<RequestBeat> RequestBeats { get; set; }

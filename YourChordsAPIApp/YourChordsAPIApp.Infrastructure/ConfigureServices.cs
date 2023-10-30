@@ -25,7 +25,8 @@ namespace YourChordsAPIApp.Infrastructure
             services.AddTransient<IUserRoleRepository, UserRoleRepository>();
             services.AddTransient<IChordTypeRepository, ChordTypeRepository>();
             services.AddScoped<IArtistRepository, ArtistRepository>();
-
+            services.AddScoped<IGenreRepository, GenreRepository>();
+            services.AddScoped<IArtistGenreRepository, ArtistGenreRepository>();
             return services;
         }
     }

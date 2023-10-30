@@ -27,7 +27,7 @@ namespace YourChordsAPIApp.WebAPI.Controllers
             return Ok(artist);
         }
 
-        [HttpGet("{artistName}")]
+        [HttpGet("name/{artistName}")]
         public async Task<IActionResult> GetArtistByName(string artistName)
         {
             var artist = await Mediator.Send(new GetArtistByNameQuery { ArtistName = artistName });

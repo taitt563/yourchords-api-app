@@ -12,12 +12,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.9" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.12" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\YourChordsAPIApp.Application\YourChordsAPIApp.Application.csproj" />
+    <ProjectReference Include="..\YourChordsAPIApp.Domain\YourChordsAPIApp.Domain.csproj" />
     <ProjectReference Include="..\YourChordsAPIApp.Infrastructure\YourChordsAPIApp.Infrastructure.csproj" />
   </ItemGroup>
 

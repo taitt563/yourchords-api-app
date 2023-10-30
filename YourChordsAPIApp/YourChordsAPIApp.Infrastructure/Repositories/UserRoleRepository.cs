@@ -11,9 +11,9 @@ namespace YourChordsAPIApp.Infrastructure.Repositories
 {
     public class UserRoleRepository : IUserRoleRepository
     {
-        private readonly YourChordsApiAppVer2DbContext _context;
+        private readonly YourChordsDbContext _context;
 
-        public UserRoleRepository(YourChordsApiAppVer2DbContext context) 
+        public UserRoleRepository(YourChordsDbContext context) 
         {
             _context = context;
         }

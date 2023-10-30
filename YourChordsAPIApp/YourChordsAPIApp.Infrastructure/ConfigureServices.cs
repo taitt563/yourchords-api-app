@@ -17,12 +17,13 @@ namespace YourChordsAPIApp.Infrastructure
     {
         public static IServiceCollection AddInfrastructureServices (this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<YourChordsApiAppVer2DbContext>(options =>
+            services.AddDbContext<YourChordsDbContext>(options =>
             {
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), builder => builder.MigrationsAssembly(typeof(YourChordsApiAppVer2DbContext).Assembly.FullName));
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), builder => builder.MigrationsAssembly(typeof(YourChordsDbContext).Assembly.FullName));
             });
 
             services.AddTransient<IUserRoleRepository, UserRoleRepository>();
+            services.AddTransient<IChordTypeRepository, ChordTypeRepository>();
             return services;
         }
     }

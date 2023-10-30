@@ -9,7 +9,7 @@ using YourChordsAPIApp.Domain.Entities;
 
 namespace YourChordsAPIApp.Infrastructure.Migrations
 {
-    [DbContext(typeof(YourChordsApiAppVer2DbContext))]
+    [DbContext(typeof(YourChordsDbContext))]
     partial class YourChordsDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

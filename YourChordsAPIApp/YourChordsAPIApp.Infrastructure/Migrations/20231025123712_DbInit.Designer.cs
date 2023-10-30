@@ -10,7 +10,7 @@ using YourChordsAPIApp.Domain.Entities;
 
 namespace YourChordsAPIApp.Infrastructure.Migrations
 {
-    [DbContext(typeof(YourChordsApiAppVer2DbContext))]
+    [DbContext(typeof(YourChordsDbContext))]
     [Migration("20231025123712_DbInit")]
     partial class DbInit
     {

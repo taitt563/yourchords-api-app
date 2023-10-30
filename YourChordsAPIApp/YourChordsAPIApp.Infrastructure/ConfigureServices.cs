@@ -22,7 +22,7 @@ namespace YourChordsAPIApp.Infrastructure
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), builder => builder.MigrationsAssembly(typeof(YourChordsApiAppVer2DbContext).Assembly.FullName));
             });
 
-            services.AddTransient<IRolesRepository, RoleRepository>();
+            services.AddTransient<IUserRoleRepository, UserRoleRepository>();
             return services;
         }
     }

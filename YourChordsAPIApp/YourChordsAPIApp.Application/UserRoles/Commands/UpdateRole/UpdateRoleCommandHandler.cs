@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 using YourChordsAPIApp.Domain.Entities;
 using YourChordsAPIApp.Domain.Repositories;
 
-namespace YourChordsAPIApp.Application.Roles.Commands.UpdateRole
+namespace YourChordsAPIApp.Application.UserRoles.Commands.UpdateRole
 {
     public class UpdateRoleCommandHandler : IRequestHandler<UpdateRoleCommand, int>
     {
-        private readonly IRolesRepository _rolesRepository;
+        private readonly IUserRoleRepository _rolesRepository;
         private readonly IMapper _mapper;
 
-        public UpdateRoleCommandHandler(IRolesRepository rolesRepository, IMapper mapper) 
+        public UpdateRoleCommandHandler(IUserRoleRepository rolesRepository, IMapper mapper) 
         {
             _rolesRepository = rolesRepository;
             _mapper = mapper;

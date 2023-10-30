@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace YourChordsAPIApp.Application.Roles.Commands.UpdateRole
+namespace YourChordsAPIApp.Application.UserRoles.Commands.UpdateRole
 {
     public class UpdateRoleCommand : IRequest<int>
     {

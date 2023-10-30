@@ -7,7 +7,7 @@ using YourChordsAPIApp.Domain.Entities;
 
 namespace YourChordsAPIApp.Domain.Repositories
 {
-    public interface IRolesRepository
+    public interface IUserRoleRepository
     {
         Task<List<UserRole>> GetAllBlogAsync();
         Task<UserRole> GetByIdAsync(int id);

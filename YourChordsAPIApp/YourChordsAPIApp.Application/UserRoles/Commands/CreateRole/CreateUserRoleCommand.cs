@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using YourChordsAPIApp.Application.Roles.Queries.GetRoles;
+using YourChordsAPIApp.Application.UserRoles.Queries.GetRoles;
 
-namespace YourChordsAPIApp.Application.Roles.Commands.CreateRole
+namespace YourChordsAPIApp.Application.UserRoles.Commands.CreateRole
 {
-    public class CreateRoleCommand : IRequest<RolesVm>
+    public class CreateUserRoleCommand : IRequest<UserRoleVm>
     {
         public string Name { get; set; }
         public string Description { get; set; }

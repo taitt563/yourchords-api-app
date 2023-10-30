@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace YourChordsAPIApp.Domain.Entities
+namespace YourChordsAPIApp.Domain.Entities;
+
+public partial class ChordType
 {
-    public partial class ChordType
-    {
-        public ChordType()
-        {
-            Chords = new HashSet<Chord>();
-        }
+    public int Id { get; set; }
 
-        public int Id { get; set; }
-        public string TypeName { get; set; } = null!;
+    public string TypeName { get; set; } = null!;
 
-        public virtual ICollection<Chord> Chords { get; set; }
-    }
+    public virtual ICollection<Chord> Chords { get; set; } = new List<Chord>();
 }

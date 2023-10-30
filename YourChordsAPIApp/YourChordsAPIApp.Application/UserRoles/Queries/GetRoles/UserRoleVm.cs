@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using YourChordsAPIApp.Application.Common.Mappings;
 using YourChordsAPIApp.Domain.Entities;
 
-namespace YourChordsAPIApp.Application.Roles.Queries.GetRoles
+namespace YourChordsAPIApp.Application.UserRoles.Queries.GetRoles
 {
-    public class RolesVm : IMapFrom<UserRole>
+    public class UserRoleVm : IMapFrom<UserRole>
     {
         public int Id { get; set; }
         public string RoleName { get; set; }

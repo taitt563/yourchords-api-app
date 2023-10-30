@@ -1,18 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace YourChordsAPIApp.Domain.Entities
-{
-    public partial class Payment
-    {
-        public int Id { get; set; }
-        public DateTime DateCreated { get; set; }
-        public string Method { get; set; } = null!;
-        public int RequestId { get; set; }
-        public int UserId { get; set; }
-        public decimal TotalPrice { get; set; }
+namespace YourChordsAPIApp.Domain.Entities;
 
-        public virtual Request Request { get; set; } = null!;
-        public virtual UserAccount User { get; set; } = null!;
-    }
+public partial class Payment
+{
+    public int Id { get; set; }
+
+    public int UserId { get; set; }
+
+    public int OrderId { get; set; }
+
+    public DateTime PaymentDate { get; set; }
+
+    public string PaymentMethod { get; set; } = null!;
+
+    public decimal PaymentAmount { get; set; }
+
+    public int PaymentStatus { get; set; }
+
+    public string? Notes { get; set; }
+
+    public virtual Order Order { get; set; } = null!;
+
+    public virtual UserAccount User { get; set; } = null!;
 }

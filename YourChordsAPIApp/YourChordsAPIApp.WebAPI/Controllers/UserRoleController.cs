@@ -1,31 +1,30 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using YourChordsAPIApp.Application.Roles.Commands.CreateRole;
-using YourChordsAPIApp.Application.Roles.Commands.DeleteRole;
-using YourChordsAPIApp.Application.Roles.Commands.UpdateRole;
-using YourChordsAPIApp.Application.Roles.Queries.GetRoleById;
-using YourChordsAPIApp.Application.Roles.Queries.GetRoles;
+using YourChordsAPIApp.Application.UserRoles.Commands.CreateRole;
+using YourChordsAPIApp.Application.UserRoles.Commands.DeleteRole;
+using YourChordsAPIApp.Application.UserRoles.Commands.UpdateRole;
+using YourChordsAPIApp.Application.UserRoles.Queries.GetRoleById;
+using YourChordsAPIApp.Application.UserRoles.Queries.GetRoles;
 using YourChordsAPIApp.Domain.Endpoints;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace YourChordsAPIApp.WebAPI.Controllers
 {
-    
+    [Route("api/user-roles")]
     [ApiController]
-    [Route("api/[controller]")]
-    public class RoleController : ApiControllerBase
+    public class UserRoleController : ApiControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> GetAllRoleAsync()
         {
-            var roles = await Mediator.Send(new GetRolesQuery());
+            var roles = await Mediator.Send(new GetUserRolesQuery());
             return Ok(roles);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{roleId}")]
         [ActionName(nameof(GetRoleById))]
-        public async Task<IActionResult> GetRoleById(int id)
+        public async Task<IActionResult> GetRoleById(int roleId)
         {
-            var role = await Mediator.Send(new GetRoleByIdQuery() { RoleId = id });
+            var role = await Mediator.Send(new GetUserRoleByIdQuery() { RoleId = roleId });
             if (role == null)
             {
                 return NotFound();
@@ -36,7 +35,7 @@ namespace YourChordsAPIApp.WebAPI.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddNewRole (CreateRoleCommand command)
+        public async Task<IActionResult> AddNewRole (CreateUserRoleCommand command)
         {
             var createdRole = await Mediator.Send(command);
             if (createdRole == null)
@@ -44,31 +43,30 @@ namespace YourChordsAPIApp.WebAPI.Controllers
                 return BadRequest("Failed to create a new role.");
             }
             return CreatedAtAction(nameof(GetRoleById), new { id = createdRole.Id }, createdRole);
-
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRole(int id, UpdateRoleCommand command)
+        [HttpPut("{roleId}")]
+        public async Task<IActionResult> UpdateRole(int roleId, UpdateRoleCommand command)
         {
-            if (id != command.Id)
+            if (roleId != command.Id)
             {
                 return BadRequest("Invalid ID.");
             }
 
             await Mediator.Send(command);
 
-            return NoContent();
+            return Ok("Success");
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRole(int id)
+        [HttpDelete("{roleId}")]
+        public async Task<IActionResult> DeleteRole(int roleId)
         {
-            var result = await Mediator.Send(new DeleteRoleCommand() { Id = id });
+            var result = await Mediator.Send(new DeleteUserRoleCommand() { Id = roleId });
             if(result == 0)
             {
                 return BadRequest("Invalid Id");
             }
-            return NoContent();
+            return Ok("Success");
         }
     }
 }

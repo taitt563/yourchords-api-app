@@ -7,22 +7,22 @@ using System.Text;
 using System.Threading.Tasks;
 using YourChordsAPIApp.Domain.Repositories;
 
-namespace YourChordsAPIApp.Application.Roles.Queries.GetRoles
+namespace YourChordsAPIApp.Application.UserRoles.Queries.GetRoles
 {
-    public class GetRolesQueryHandler : IRequestHandler<GetRolesQuery, List<RolesVm>>
+    public class GetUserRolesQueryHandler : IRequestHandler<GetUserRolesQuery, List<UserRoleVm>>
     {
-        private readonly IRolesRepository _rolesRepository;
+        private readonly IUserRoleRepository _rolesRepository;
         private readonly IMapper _mapper;
 
-        public GetRolesQueryHandler(IRolesRepository rolesRepository, IMapper mapper) {
+        public GetUserRolesQueryHandler(IUserRoleRepository rolesRepository, IMapper mapper) {
             _rolesRepository = rolesRepository;
             _mapper = mapper;
         }
-        public async Task<List<RolesVm>> Handle(GetRolesQuery request, CancellationToken cancellationToken)
+        public async Task<List<UserRoleVm>> Handle(GetUserRolesQuery request, CancellationToken cancellationToken)
         {
             var roles = await _rolesRepository.GetAllBlogAsync();
             //var roleList = roles.Select(x => new RolesVm { Id = x.Id , Name = x.Name, Description = x.Description}).ToList();
-            var roleList = _mapper.Map<List<RolesVm>>(roles);
+            var roleList = _mapper.Map<List<UserRoleVm>>(roles);
             return roleList;
         }
     }

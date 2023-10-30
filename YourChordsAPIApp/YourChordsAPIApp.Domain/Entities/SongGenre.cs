@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace YourChordsAPIApp.Domain.Entities
-{
-    public partial class SongGenre
-    {
-        public int Id { get; set; }
-        public int SongId { get; set; }
-        public int GenreId { get; set; }
+namespace YourChordsAPIApp.Domain.Entities;
 
-        public virtual Genre Genre { get; set; } = null!;
-        public virtual Song Song { get; set; } = null!;
-    }
+public partial class SongGenre
+{
+    public int Id { get; set; }
+
+    public int SongId { get; set; }
+
+    public int GenreId { get; set; }
+
+    public virtual Genre Genre { get; set; } = null!;
+
+    public virtual Song Song { get; set; } = null!;
 }

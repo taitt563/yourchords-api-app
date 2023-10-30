@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace YourChordsAPIApp.Application.Roles.Queries.GetRoles
+namespace YourChordsAPIApp.Application.UserRoles.Queries.GetRoles
 {
-    public class GetRolesQuery : IRequest<List<RolesVm>>
+    public class GetUserRolesQuery : IRequest<List<UserRoleVm>>
     {
     }
 

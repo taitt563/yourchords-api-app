@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace YourChordsAPIApp.Infrastructure.Repositories
 {
-    public class RoleRepository : IRolesRepository
+    public class UserRoleRepository : IUserRoleRepository
     {
         private readonly YourChordsApiAppVer2DbContext _context;
 
-        public RoleRepository(YourChordsApiAppVer2DbContext context) 
+        public UserRoleRepository(YourChordsApiAppVer2DbContext context) 
         {
             _context = context;
         }

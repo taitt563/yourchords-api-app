@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace YourChordsAPIApp.Application.Roles.Commands.DeleteRole
+namespace YourChordsAPIApp.Application.UserRoles.Commands.DeleteRole
 {
-    public class DeleteRoleCommand : IRequest<int>
+    public class DeleteUserRoleCommand : IRequest<int>
     {
         public int Id { get; set; }
     }

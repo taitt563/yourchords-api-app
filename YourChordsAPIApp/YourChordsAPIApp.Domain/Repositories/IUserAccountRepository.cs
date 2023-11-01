@@ -23,7 +23,7 @@ namespace YourChordsAPIApp.Domain.Repositories
         Task<UserAccount> GetUserAccountByEmailAsync(string email);
         Task<IEnumerable<UserAccount>> GetUserAccountsAsync(int page, int pageSize, UserFilter filter);
         Task<int> GetUserAccountsCountAsync(UserFilter filter);
-        Task<bool> VerifyPasswordAsync(UserAccount userAccount, string password);
+        Task<bool> VerifyPasswordAsync(string password, UserAccount userAccount);
         Task<string> GenerateTokenAsync(UserAccount userAccount);
         Task<bool> IsEmailUniqueAsync(string email);
     }

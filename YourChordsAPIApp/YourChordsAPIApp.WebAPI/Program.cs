@@ -82,6 +82,13 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Customer", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("Musician", policy => policy.RequireRole("Musician"));
+    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("ChordValidator", policy => policy.RequireRole("ChordValidator"));
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -29,7 +29,7 @@ namespace YourChordsAPIApp.Infrastructure.Repositories
 
         public async Task<UserAccount> RegisterAsync(string email, string password, string confirmPassword)
         {
-            var existingUser = await _context.UserAccounts.SingleOrDefaultAsync(u => u.Email == email);
+            var existingUser = await GetUserAccountByEmailAsync(email);
 
             if (existingUser != null)
             {
@@ -60,6 +60,11 @@ namespace YourChordsAPIApp.Infrastructure.Repositories
                 if (userAccount == null || !BCrypt.Net.BCrypt.Verify(password, userAccount.PasswordHash))
                 {
                     throw new Exception("Invalid email or password.");
+                }
+                
+                if (userAccount.IsDeleted)
+                {
+                    throw new Exception("Account is banned. Please contact support");
                 }
 
                 var token = await GenerateTokenAsync(userAccount);
@@ -122,7 +127,7 @@ namespace YourChordsAPIApp.Infrastructure.Repositories
 
         public async Task<bool> VerifyEmailAsync(int userId)
         {
-            var userAccount = await _context.UserAccounts.FindAsync(userId);
+            var userAccount = await GetUserAccountByIdAsync(userId);
 
             if (userAccount == null)
             {
@@ -213,6 +218,18 @@ namespace YourChordsAPIApp.Infrastructure.Repositories
         {
             try
             {
+                if (page < 1)
+                {
+                    page = 1;
+                }
+
+                if (pageSize < 1)
+                {
+                    pageSize = 10;
+                }
+
+                int skip = (page - 1) * pageSize;
+
                 var query = _context.UserAccounts.AsQueryable();
 
                 if (!string.IsNullOrEmpty(filter.Email))
@@ -239,9 +256,8 @@ namespace YourChordsAPIApp.Infrastructure.Repositories
                 {
                     query = query.Where(u => u.Role == filter.Role);
                 }   
-                // Thêm các điều kiện lọc khác tùy theo yêu cầu
 
-                return await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+                return await query.Skip(skip).Take(pageSize).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -276,7 +292,7 @@ namespace YourChordsAPIApp.Infrastructure.Repositories
         }
 
 
-        public async Task<bool> VerifyPasswordAsync(UserAccount userAccount, string password)
+        public async Task<bool> VerifyPasswordAsync(string password, UserAccount userAccount)
         {
             try
             {
@@ -318,12 +334,12 @@ namespace YourChordsAPIApp.Infrastructure.Repositories
                 //var audience = jwtSettings.GetValue<string>("Audience");
 
                 var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, userAccount.Id.ToString()),
-            new Claim(ClaimTypes.Email, userAccount.Email),
-            new Claim(ClaimTypes.Role, userAccount.Role)
-            // Thêm các claims khác nếu cần
-        };
+                {
+                     new Claim(ClaimTypes.NameIdentifier, userAccount.Id.ToString()),
+                     new Claim(ClaimTypes.Email, userAccount.Email),
+                     new Claim(ClaimTypes.Role, userAccount.Role)
+                    // Thêm các claims khác nếu cần
+                };
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
                 var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

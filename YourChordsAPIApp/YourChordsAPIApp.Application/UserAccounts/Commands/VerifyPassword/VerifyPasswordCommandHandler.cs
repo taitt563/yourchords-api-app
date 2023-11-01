@@ -19,7 +19,7 @@ namespace YourChordsAPIApp.Application.UserAccounts.Commands.VerifyPassword
 
         public async Task<bool> Handle(VerifyPasswordCommand request, CancellationToken cancellationToken)
         {
-            return await _userAccountRepository.VerifyPasswordAsync(request.UserAccount, request.Password);
+            return await _userAccountRepository.VerifyPasswordAsync(request.Password, request.UserAccount);
         }
     }
 

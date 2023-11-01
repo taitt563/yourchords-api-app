@@ -10,8 +10,8 @@ namespace YourChordsAPIApp.Application.UserAccounts.Commands.VerifyPassword
 {
     public class VerifyPasswordCommand : IRequest<bool>
     {
-        public UserAccount UserAccount { get; set; }
         public string Password { get; set; }
-    }
+        public UserAccount UserAccount { get; set; }
+    }        
 
 }

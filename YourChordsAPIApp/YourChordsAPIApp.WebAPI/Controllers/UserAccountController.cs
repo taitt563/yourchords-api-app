@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using YourChordsAPIApp.Application.UserAccounts.Commands.ChangePassword;
 using YourChordsAPIApp.Application.UserAccounts.Commands.DeleteAccount;
 using YourChordsAPIApp.Application.UserAccounts.Commands.GenerateToken;
@@ -19,6 +20,7 @@ using YourChordsAPIApp.Application.UserAccounts.Queries.GetUserAccountsCount;
 using YourChordsAPIApp.Application.UserAccounts.Queries.IsEmailUnique;
 using YourChordsAPIApp.Application.UserAccounts.Vms;
 using YourChordsAPIApp.Domain.Enums;
+using YourChordsAPIApp.WebAPI.Models;
 
 namespace YourChordsAPIApp.WebAPI.Controllers
 {
@@ -27,6 +29,64 @@ namespace YourChordsAPIApp.WebAPI.Controllers
     public class UserAccountController : ApiControllerBase
     {
         [Authorize]
+        [HttpGet("current-profile")]
+        public async Task<IActionResult> GetCurrentProfileAsync()
+        {
+            // Lấy thông tin người dùng từ claim
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                return BadRequest(new { message = "Invalid token. User not found." });
+            }
+
+            // Gọi phương thức để lấy thông tin hồ sơ từ repository (sử dụng Mediator)
+            var userAccount = await Mediator.Send(new GetUserAccountByIdQuery { UserId = int.Parse(userId) });
+
+            if (userAccount == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            return Ok(userAccount);
+        }
+
+        [Authorize]
+        [HttpPut("update-current-profile")]
+        public async Task<IActionResult> UpdateCurrentUserProfile([FromBody] ProfileModel model)
+        {
+            // Lấy thông tin người dùng từ claim
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                return BadRequest(new { message = "Invalid token. User not found." });
+            }
+
+            // Cập nhật thông tin hồ sơ
+            var result = await Mediator.Send(new UpdateProfileCommand
+            {
+                UserId = int.Parse(userId),
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Bio = model.Bio,
+                Dob = model.Dob,
+                PhoneNumber = model.PhoneNumber,
+                Gender = model.Gender,
+                Image = model.Image
+            });
+
+            if (result)
+            {
+                return Ok(new { message = "Profile updated successfully." });
+            }
+            else
+            {
+                return BadRequest(new { message = "Failed to update profile." });
+            }
+        }
+
+        [CustomAuthorize("Customer", "Musician", "Admin","ChordValidator")]
         [HttpPut("update-profile")]
         public async Task<IActionResult> UpdateProfileAsync(UpdateProfileCommand command)
         {
@@ -34,7 +94,7 @@ namespace YourChordsAPIApp.WebAPI.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        [CustomAuthorize("Customer", "Musician", "Admin", "ChordValidator")]
         [HttpPut("set-private-status")]
         public async Task<IActionResult> SetPrivateStatusAsync(SetPrivateStatusCommand command)
         {
@@ -42,7 +102,7 @@ namespace YourChordsAPIApp.WebAPI.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        [CustomAuthorize("Admin")]
         [HttpPut("delete-account")]
         public async Task<IActionResult> DeleteAccountAsync(DeleteAccountCommand command)
         {
@@ -50,7 +110,7 @@ namespace YourChordsAPIApp.WebAPI.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        [CustomAuthorize("Admin")]
         [HttpPut("{userId}")]
         public async Task<IActionResult> UpdateUserRole(int userId, UpdateUserRoleCommand command)
         {
@@ -63,6 +123,7 @@ namespace YourChordsAPIApp.WebAPI.Controllers
             return BadRequest("Update user role failed.");
         }
 
+        [CustomAuthorize("Customer", "Musician", "Admin", "ChordValidator")]
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetUserAccountByIdAsync(int userId)
         {

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -9,8 +8,10 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using YourChordsAPIApp.Application.UserAccounts.Vms;
 using YourChordsAPIApp.Domain.Common;
 using YourChordsAPIApp.Domain.Entities;
+using YourChordsAPIApp.Domain.Enums;
 using YourChordsAPIApp.Domain.Repositories;
 
 namespace YourChordsAPIApp.Infrastructure.Repositories
@@ -26,228 +27,373 @@ namespace YourChordsAPIApp.Infrastructure.Repositories
             _configuration = configuration;
         }
 
-        public async Task<UserAccount> GetUserAccountByIdAsync(int id)
+        public async Task<UserAccount> RegisterAsync(string email, string password, string confirmPassword)
         {
-            return await _context.UserAccounts.FindAsync(id);
-        }
+            var existingUser = await _context.UserAccounts.SingleOrDefaultAsync(u => u.Email == email);
 
-        public async Task<UserAccount> GetUserAccountByEmailAsync(string email)
-        {
-            return await _context.UserAccounts.FirstOrDefaultAsync(u => u.Email == email);
-        }
-
-        public async Task<UserAccount> GetUserAccountByUserNameAsync(string userName)
-        {
-            return await _context.UserAccounts.FirstOrDefaultAsync(u => u.UserName == userName);
-        }
-
-        public async Task<IEnumerable<UserAccount>> GetUserAccountsAsync(int page, int pageSize, UserFilter filter)
-        {
-            var query = _context.UserAccounts.AsQueryable();
-
-            if (!string.IsNullOrEmpty(filter.UserName))
+            if (existingUser != null)
             {
-                query = query.Where(u => u.UserName.Contains(filter.UserName));
+                throw new Exception("Email already exists.");
             }
-
-            if (!string.IsNullOrEmpty(filter.Email))
+            var userAccount = new UserAccount
             {
-                query = query.Where(u => u.Email.Contains(filter.Email));
-            }
+                Email = email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
+                DateJoined = DateTime.Now,
+                IsVerified = false,
+                IsPrivate = false,
+                IsDeleted = false,
+                Role = UserRole.Customer.ToString() // Set default role here
+            };
 
-            if (filter.IsDeleted.HasValue)
-            {
-                query = query.Where(u => u.IsDeleted == filter.IsDeleted.Value);
-            }
-
-            if (filter.IsPrivate.HasValue)
-            {
-                query = query.Where(u => u.IsPrivate == filter.IsPrivate.Value);
-            }
-
-            if (filter.IsVerified.HasValue)
-            {
-                query = query.Where(u => u.IsVerified == filter.IsVerified.Value);
-            }
-
-            if (!string.IsNullOrEmpty(filter.Role))
-            {
-                query = query.Where(u => u.Role.Contains(filter.Role));
-            }
-
-            return await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-        }
-
-
-        public async Task<int> GetUserAccountsCountAsync(UserFilter filter)
-        {
-            var query = _context.UserAccounts.AsQueryable();
-
-            if (!string.IsNullOrEmpty(filter.UserName))
-            {
-                query = query.Where(u => u.UserName.Contains(filter.UserName));
-            }
-
-            if (!string.IsNullOrEmpty(filter.Email))
-            {
-                query = query.Where(u => u.Email.Contains(filter.Email));
-            }
-
-            if (filter.IsDeleted.HasValue)
-            {
-                query = query.Where(u => u.IsDeleted == filter.IsDeleted.Value);
-            }
-
-            if (filter.IsPrivate.HasValue)
-            {
-                query = query.Where(u => u.IsPrivate == filter.IsPrivate.Value);
-            }
-
-            if (filter.IsVerified.HasValue)
-            {
-                query = query.Where(u => u.IsVerified == filter.IsVerified.Value);
-            }
-
-            if (!string.IsNullOrEmpty(filter.Role))
-            {
-                query = query.Where(u => u.Role.Contains(filter.Role));
-            }
-
-            return await query.CountAsync();
-        }
-
-
-        public async Task<UserAccount> CreateUserAccountAsync(UserAccount userAccount)
-        {
             _context.UserAccounts.Add(userAccount);
             await _context.SaveChangesAsync();
             return userAccount;
         }
 
-        public async Task UpdateUserAccountAsync(UserAccount userAccount)
+        public async Task<UserAccount> LoginAsync(string email, string password)
         {
-            _context.UserAccounts.Update(userAccount);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteUserAccountAsync(int id)
-        {
-            var userAccount = await _context.UserAccounts.FindAsync(id);
-            if (userAccount != null)
+            try
             {
-                _context.UserAccounts.Remove(userAccount);
-                await _context.SaveChangesAsync();
-            }
-        }
+                var userAccount = await GetUserAccountByEmailAsync(email);
 
-        public async Task<bool> VerifyPasswordAsync(UserAccount userAccount, string password)
-        {
-            // Lấy hash mật khẩu từ cơ sở dữ liệu
-            string hashedPasswordFromDatabase = userAccount.PasswordHash;
-
-            // Xác thực mật khẩu
-            return BCrypt.Net.BCrypt.Verify(password, hashedPasswordFromDatabase);
-        }
-
-        public async Task<string> GenerateTokenAsync(UserAccount userAccount)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Name, userAccount.UserName),
-        new Claim(ClaimTypes.Email, userAccount.Email),
-        new Claim(ClaimTypes.Role, userAccount.Role),
-    };
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddHours(1), // Thời gian hết hạn của token
-                signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        public async Task<bool> IsEmailUniqueAsync(string email)
-        {
-            return await _context.UserAccounts.AllAsync(u => u.Email != email);
-        }
-
-        public async Task<bool> IsUserNameUniqueAsync(string userName)
-        {
-            return await _context.UserAccounts.AllAsync(u => u.UserName != userName);
-        }
-
-        public async Task<UserAccount> SignInAsync(string email, string password)
-        {
-            // Tìm người dùng theo địa chỉ email
-            var user = await _context.UserAccounts.SingleOrDefaultAsync(u => u.Email == email);
-
-            // Kiểm tra người dùng có tồn tại và mật khẩu khớp hay không
-            if (user != null && BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
-            {
-                return user;
-            }
-
-            return null;
-        }
-
-
-        public async Task<UserAccount> SignUpAsync(string email, string password)
-        {
-            try 
-            {
-                // Hash mật khẩu
-                var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
-
-                // Tạo một đối tượng UserAccount
-                var newUserAccount = new UserAccount
+                if (userAccount == null || !BCrypt.Net.BCrypt.Verify(password, userAccount.PasswordHash))
                 {
-                    Email = email,
-                    PasswordHash = passwordHash
-                    
-                };
+                    throw new Exception("Invalid email or password.");
+                }
 
-                // Thêm userAccount vào cơ sở dữ liệu
-                _context.UserAccounts.Add(newUserAccount);
+                var token = await GenerateTokenAsync(userAccount);
+
+                userAccount.Token = token;
+                
                 await _context.SaveChangesAsync();
 
-                return newUserAccount;
+                return userAccount;
             }
             catch (Exception ex)
             {
-                var errorMessage = ex.InnerException?.Message;
-                throw new Exception($"Error occurred while saving changes: {errorMessage}", ex);
+                // Xử lý ngoại lệ (ví dụ: ghi log, đưa ra thông báo, ...)
+                throw new Exception("An error occurred while logging in.", ex);
             }
         }
 
 
-
-        public async Task<bool> ChangePasswordAsync(int userId, string oldPassword, string newPassword)
+        public async Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword)
         {
-            // Lấy thông tin người dùng từ cơ sở dữ liệu
-            var user = await _context.UserAccounts.FindAsync(userId);
+            var userAccount = await GetUserAccountByIdAsync(userId);
 
-            // Kiểm tra mật khẩu cũ
-            if (BCrypt.Net.BCrypt.Verify(oldPassword, user.PasswordHash))
+            if (userAccount == null)
             {
-                // Hash mật khẩu mới
-                var newPasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
-
-                // Cập nhật mật khẩu trong cơ sở dữ liệu
-                user.PasswordHash = newPasswordHash;
-
-                // Lưu thay đổi
-                await _context.SaveChangesAsync();
-
-                return true;
+                throw new Exception("User not found.");
             }
 
-            return false;
+            if (!BCrypt.Net.BCrypt.Verify(currentPassword, userAccount.PasswordHash))
+            {
+                throw new Exception("Invalid current password.");
+            }
+
+            userAccount.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            await _context.SaveChangesAsync();
+
+            return true;
         }
+
+        public async Task<bool> UpdateProfileAsync(int userId, string firstName, string lastName, string bio, DateTime? dob, string phoneNumber, bool? gender, string image)
+        {
+            var userAccount = await _context.UserAccounts.FindAsync(userId);
+
+            if (userAccount == null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            userAccount.FirstName = firstName;
+            userAccount.LastName = lastName;
+            userAccount.Bio = bio;
+            userAccount.Dob = dob;
+            userAccount.PhoneNumber = phoneNumber;
+            userAccount.Gender = gender;
+            userAccount.Image = image;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> VerifyEmailAsync(int userId)
+        {
+            var userAccount = await _context.UserAccounts.FindAsync(userId);
+
+            if (userAccount == null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            userAccount.IsVerified = true;
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> SetPrivateStatusAsync(int userId, bool isPrivate)
+        {
+            var userAccount = await GetUserAccountByIdAsync(userId);
+
+            if (userAccount == null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            userAccount.IsPrivate = isPrivate;
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> DeleteAccountAsync(int userId)
+        {
+            var userAccount = await GetUserAccountByIdAsync(userId);
+
+            if (userAccount == null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            userAccount.IsDeleted = true;
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> UpdateUserRoleAsync(int userId, UserRole newRole)
+        {
+            var userAccount = await GetUserAccountByIdAsync(userId);
+
+            if (userAccount == null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            userAccount.Role = newRole.ToString();
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<UserAccount> GetUserAccountByIdAsync(int userId)
+        {
+            try
+            {
+                var userAccount = await _context.UserAccounts.FindAsync(userId);
+                return userAccount;
+            }
+            catch (Exception ex)
+            {
+                // Xử lý ngoại lệ (ví dụ: ghi log, đưa ra thông báo, ...)
+                throw new Exception("An error occurred while getting user account by ID.", ex);
+            }
+        }
+
+
+        public async Task<UserAccount> GetUserAccountByEmailAsync(string email)
+        {
+            try
+            {
+                var userAccount = await _context.UserAccounts.SingleOrDefaultAsync(u => u.Email == email);
+                return userAccount;
+            }
+            catch (Exception ex)
+            {
+                // Xử lý ngoại lệ (ví dụ: ghi log, đưa ra thông báo, ...)
+                throw new Exception("An error occurred while getting user account by email.", ex);
+            }
+        }
+
+
+        public async Task<IEnumerable<UserAccount>> GetUserAccountsAsync(int page, int pageSize, UserFilter filter)
+        {
+            try
+            {
+                var query = _context.UserAccounts.AsQueryable();
+
+                if (!string.IsNullOrEmpty(filter.Email))
+                {
+                    query = query.Where(u => u.Email.Contains(filter.Email));
+                }
+
+                if (filter.IsVerified.HasValue)
+                {
+                    query = query.Where(u => u.IsVerified == filter.IsVerified);
+                }
+
+                if (filter.IsPrivate.HasValue)
+                {
+                    query = query.Where(u => u.IsPrivate == filter.IsPrivate);
+                }
+
+                if (filter.IsDeleted.HasValue)
+                {
+                    query = query.Where(u => u.IsDeleted == filter.IsDeleted);
+                }
+
+                if (!string.IsNullOrEmpty(filter.Role))
+                {
+                    query = query.Where(u => u.Role == filter.Role);
+                }   
+                // Thêm các điều kiện lọc khác tùy theo yêu cầu
+
+                return await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                // Xử lý ngoại lệ (ví dụ: ghi log, đưa ra thông báo, ...)
+                throw new Exception("An error occurred while getting user accounts.", ex);
+            }
+        }
+
+
+        public async Task<int> GetUserAccountsCountAsync(UserFilter filter)
+        {
+            try
+            {
+                var query = _context.UserAccounts.AsQueryable();
+
+                if (!string.IsNullOrEmpty(filter.Email))
+                {
+                    query = query.Where(u => u.Email.Contains(filter.Email));
+                }
+
+                if (!string.IsNullOrEmpty(filter.Role))
+                {
+                    query = query.Where(u => u.Role.Contains(filter.Role));
+                }
+                return await query.CountAsync();
+            }
+            catch (Exception ex)
+            {
+                // Xử lý ngoại lệ (ví dụ: ghi log, đưa ra thông báo, ...)
+                throw new Exception("An error occurred while getting user accounts count.", ex);
+            }
+        }
+
+
+        public async Task<bool> VerifyPasswordAsync(UserAccount userAccount, string password)
+        {
+            try
+            {
+                if (userAccount == null)
+                {
+                    throw new ArgumentNullException(nameof(userAccount), "User account cannot be null.");
+                }
+
+                if (string.IsNullOrWhiteSpace(password))
+                {
+                    throw new ArgumentException("Password cannot be null or empty.", nameof(password));
+                }
+
+                // Thực hiện việc xác thực mật khẩu ở đây
+                bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, userAccount.PasswordHash);
+                return isPasswordValid;
+            }
+            catch (Exception ex)
+            {
+                // Xử lý ngoại lệ (ví dụ: ghi log, đưa ra thông báo, ...)
+                throw new Exception("An error occurred while verifying the password.", ex);
+            }
+        }
+
+
+        public async Task<string> GenerateTokenAsync(UserAccount userAccount)
+        {
+            try
+            {
+                if (userAccount == null)
+                {
+                    throw new ArgumentNullException(nameof(userAccount), "User account cannot be null.");
+                }
+
+                // Thực hiện việc tạo token ở đây
+                var jwtSettings = _configuration.GetSection("JwtSettings");
+                var secretKey = jwtSettings.GetValue<string>("SecretKey");
+                //var issuer = jwtSettings.GetValue<string>("Issuer");
+                //var audience = jwtSettings.GetValue<string>("Audience");
+
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userAccount.Id.ToString()),
+            new Claim(ClaimTypes.Email, userAccount.Email),
+            new Claim(ClaimTypes.Role, userAccount.Role)
+            // Thêm các claims khác nếu cần
+        };
+
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+                var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                var expiration = DateTime.UtcNow.AddDays(1); // Thời hạn của token
+
+                var token = new JwtSecurityToken(
+                    //issuer: issuer,
+                    //audience: audience,
+                    claims: claims,
+                    expires: expiration,
+                    signingCredentials: credentials
+                );
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                string tokenString = tokenHandler.WriteToken(token);
+
+                return tokenString;
+            }
+            catch (Exception ex)
+            {
+                // Xử lý ngoại lệ (ví dụ: ghi log, đưa ra thông báo, ...)
+                throw new Exception("An error occurred while generating the token.", ex);
+            }
+        }
+
+
+        public async Task<bool> IsEmailUniqueAsync(string email)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(email))
+                {
+                    throw new ArgumentNullException(nameof(email), "Email cannot be null or empty.");
+                }
+
+                // Thực hiện kiểm tra tính duy nhất của email ở đây
+                var isUnique = await _context.UserAccounts.AllAsync(u => u.Email != email);
+
+                return isUnique;
+            }
+            catch (Exception ex)
+            {
+                // Xử lý ngoại lệ (ví dụ: ghi log, đưa ra thông báo, ...)
+                throw new Exception("An error occurred while checking email uniqueness.", ex);
+            }
+        }
+
+
+        //    public async Task<string> GenerateJwtToken(UserAccount userAccount)
+        //    {
+        //        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
+        //        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        //        var claims = new[]
+        //        {
+        //    new Claim(ClaimTypes.Email, userAccount.Email),
+        //    new Claim(ClaimTypes.Role, userAccount.Role) // Assuming userAccount contains Role information
+        //    // Add more claims as needed
+        //};
+
+        //        var token = new JwtSecurityToken(
+        //            issuer: _configuration["JwtSettings:ValidIssuer"],
+        //            audience: _configuration["JwtSettings:ValidAudience"],
+        //            claims: claims,
+        //            expires: DateTime.UtcNow.AddMinutes(30), // Set the expiration time as needed
+        //            signingCredentials: credentials
+        //        );
+
+        //        return new JwtSecurityTokenHandler().WriteToken(token);
+        //    }
     }
 
 }

@@ -8,7 +8,6 @@ namespace YourChordsAPIApp.Domain.Common
 {
     public class UserFilter
     {
-        public string? UserName { get; set; }
         public string? Email { get; set; }
         public bool? IsDeleted { get; set; }
         public bool? IsPrivate { get; set; }

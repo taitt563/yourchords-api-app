@@ -1,85 +1,97 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using YourChordsAPIApp.Application.UserAccounts.Commands.CreateUserAccount;
-using YourChordsAPIApp.Application.UserAccounts.Commands.DeleteUserAccount;
-using YourChordsAPIApp.Application.UserAccounts.Commands.SignIn;
-using YourChordsAPIApp.Application.UserAccounts.Commands.SignUp;
-using YourChordsAPIApp.Application.UserAccounts.Commands.UpdateUserAccount;
-using YourChordsAPIApp.Application.UserAccounts.Queries.GenerateToken;
+using YourChordsAPIApp.Application.UserAccounts.Commands.ChangePassword;
+using YourChordsAPIApp.Application.UserAccounts.Commands.DeleteAccount;
+using YourChordsAPIApp.Application.UserAccounts.Commands.GenerateToken;
+using YourChordsAPIApp.Application.UserAccounts.Commands.LoginUser;
+using YourChordsAPIApp.Application.UserAccounts.Commands.RegisterUser;
+using YourChordsAPIApp.Application.UserAccounts.Commands.SetPrivateStatus;
+using YourChordsAPIApp.Application.UserAccounts.Commands.UpdateProfile;
+using YourChordsAPIApp.Application.UserAccounts.Commands.UpdateUserRole;
+using YourChordsAPIApp.Application.UserAccounts.Commands.VerifyEmail;
+using YourChordsAPIApp.Application.UserAccounts.Commands.VerifyPassword;
+using YourChordsAPIApp.Application.UserAccounts.Queries.GetUserAccountByEmail;
 using YourChordsAPIApp.Application.UserAccounts.Queries.GetUserAccountById;
+using YourChordsAPIApp.Application.UserAccounts.Queries.GetUserAccounts;
+using YourChordsAPIApp.Application.UserAccounts.Queries.GetUserAccountsCount;
+using YourChordsAPIApp.Application.UserAccounts.Queries.IsEmailUnique;
+using YourChordsAPIApp.Application.UserAccounts.Vms;
+using YourChordsAPIApp.Domain.Enums;
 
 namespace YourChordsAPIApp.WebAPI.Controllers
 {
-    [Route("api/user-accounts")]
     [ApiController]
+    [Route("api/user-accounts")]
     public class UserAccountController : ApiControllerBase
     {
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserAccountById(int id)
+        [Authorize]
+        [HttpPut("update-profile")]
+        public async Task<IActionResult> UpdateProfileAsync(UpdateProfileCommand command)
         {
-            var userAccount = await Mediator.Send(new GetUserAccountByIdQuery { UserId = id });
+            var result = await Mediator.Send(command);
+            return Ok(result);
+        }
 
-            if (userAccount == null)
+        [Authorize]
+        [HttpPut("set-private-status")]
+        public async Task<IActionResult> SetPrivateStatusAsync(SetPrivateStatusCommand command)
+        {
+            var result = await Mediator.Send(command);
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPut("delete-account")]
+        public async Task<IActionResult> DeleteAccountAsync(DeleteAccountCommand command)
+        {
+            var result = await Mediator.Send(command);
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> UpdateUserRole(int userId, UpdateUserRoleCommand command)
+        {
+            command.UserId = userId;
+            var result = await Mediator.Send(command);
+            if (result)
             {
-                return NotFound();
+                return Ok();
             }
-
-            return Ok(userAccount);
+            return BadRequest("Update user role failed.");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateUserAccount(CreateUserAccountCommand command)
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetUserAccountByIdAsync(int userId)
         {
-            var createdUserAccount = await Mediator.Send(command);
-            return CreatedAtAction(nameof(GetUserAccountById), new { id = createdUserAccount.Id }, createdUserAccount);
+            var query = new GetUserAccountByIdQuery { UserId = userId };
+            var result = await Mediator.Send(query);
+            return Ok(result);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUserAccount(int id, UpdateUserAccountCommand command)
+        [HttpGet("by-email")]
+        public async Task<IActionResult> GetUserAccountByEmailAsync(string email)
         {
-            command.UserAccount.Id = id;
-            await Mediator.Send(command);
-            return NoContent();
+            var query = new GetUserAccountByEmailQuery { Email = email };
+            var result = await Mediator.Send(query);
+            return Ok(result);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUserAccount(int id)
+        [HttpGet]
+        public async Task<IActionResult> GetUserAccountsAsync([FromQuery] GetUserAccountsQuery query)
         {
-            await Mediator.Send(new DeleteUserAccountCommand { UserId = id });
-            return NoContent();
+            var result = await Mediator.Send(query);
+            return Ok(result);
         }
 
-        [HttpPost("sign-in")]
-        public async Task<IActionResult> SignIn(SignInCommand command)
+        [HttpGet("count")]
+        public async Task<IActionResult> GetUserAccountsCountAsync([FromQuery] GetUserAccountsCountQuery query)
         {
-            var userAccount = await Mediator.Send(command);
-
-            if (userAccount == null)
-            {
-                return Unauthorized();
-            }
-
-            var token = await Mediator.Send(new GenerateTokenQuery { UserAccount = userAccount });
-
-            return Ok(new { Token = token });
+            var result = await Mediator.Send(query);
+            return Ok(result);
         }
-
-        [HttpPost("sign-up")]
-        public async Task<IActionResult> SignUp([FromBody] SignUpCommand command)
-        {
-            try
-            {
-                var createdUserAccount = await Mediator.Send(command);
-                var token = await Mediator.Send(new GenerateTokenQuery { UserAccount = createdUserAccount });
-
-                return CreatedAtAction(nameof(GetUserAccountById), new { id = createdUserAccount.Id }, new { Token = token });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Message = ex.Message });
-            }
-        }
-
     }
 
 }

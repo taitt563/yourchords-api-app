@@ -10,16 +10,16 @@ namespace YourChordsAPIApp.Application.UserAccounts.Commands.ChangePassword
 {
     public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand, bool>
     {
-        private readonly IUserAccountRepository _userAccountRepository;
+        private readonly IUserAccountRepository _repository;
 
-        public ChangePasswordCommandHandler(IUserAccountRepository userAccountRepository)
+        public ChangePasswordCommandHandler(IUserAccountRepository repository)
         {
-            _userAccountRepository = userAccountRepository;
+            _repository = repository;
         }
 
         public async Task<bool> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
         {
-            return await _userAccountRepository.ChangePasswordAsync(request.UserId, request.OldPassword, request.NewPassword);
+            return await _repository.ChangePasswordAsync(request.UserId, request.CurrentPassword, request.NewPassword);
         }
     }
 

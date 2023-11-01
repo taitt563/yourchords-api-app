@@ -6,11 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using YourChordsAPIApp.Application.UserAccounts.Vms;
 
-namespace YourChordsAPIApp.Application.UserAccounts.Queries.GetUserAccountByEmail
+namespace YourChordsAPIApp.Application.UserAccounts.Commands.LoginUser
 {
-    public class GetUserAccountByEmailQuery : IRequest<UserAccountVm>
+    public class LoginUserCommand : IRequest<UserAccountVm>
     {
         public string Email { get; set; }
+        public string Password { get; set; }
     }
-
 }

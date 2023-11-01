@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YourChordsAPIApp.Application.UserAccounts.Vms;
 using YourChordsAPIApp.Domain.Common;
 
 namespace YourChordsAPIApp.Application.UserAccounts.Queries.GetUserAccounts

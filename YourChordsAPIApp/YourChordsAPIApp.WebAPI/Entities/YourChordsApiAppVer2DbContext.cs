@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace YourChordsAPIApp.Domain.Entities;
+namespace YourChordsAPIApp.WebAPI.Entities;
 
-public partial class YourChordsDbContext : DbContext
+public partial class YourChordsApiAppVer2DbContext : DbContext
 {
-    public YourChordsDbContext()
+    public YourChordsApiAppVer2DbContext()
     {
     }
 
-    public YourChordsDbContext(DbContextOptions<YourChordsDbContext> options)
+    public YourChordsApiAppVer2DbContext(DbContextOptions<YourChordsApiAppVer2DbContext> options)
         : base(options)
     {
     }
@@ -45,8 +45,6 @@ public partial class YourChordsDbContext : DbContext
 
     public virtual DbSet<Payment> Payments { get; set; }
 
-    public virtual DbSet<Role> Roles { get; set; }
-
     public virtual DbSet<Song> Songs { get; set; }
 
     public virtual DbSet<SongArtist> SongArtists { get; set; }
@@ -61,7 +59,7 @@ public partial class YourChordsDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=tcp:yourchordsdbserver.database.windows.net,1433;Initial Catalog=YourChordsDB;Persist Security Info=False;User ID=yourchords;Password=admin@123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+        => optionsBuilder.UseSqlServer("Server=SE140283; Database= YourChordsApiAppVer2Db; User ID=sa; Password=admin123; trustServerCertificate=true;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -71,6 +69,7 @@ public partial class YourChordsDbContext : DbContext
 
             entity.ToTable("Artist");
 
+            entity.Property(e => e.Bio).HasMaxLength(255);
             entity.Property(e => e.Country).HasMaxLength(255);
             entity.Property(e => e.Dob).HasColumnType("date");
             entity.Property(e => e.ExternalLink).HasMaxLength(255);
@@ -311,11 +310,6 @@ public partial class YourChordsDbContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Payment_UserAccount");
-        });
-
-        modelBuilder.Entity<Role>(entity =>
-        {
-            entity.ToTable("Role");
         });
 
         modelBuilder.Entity<Song>(entity =>

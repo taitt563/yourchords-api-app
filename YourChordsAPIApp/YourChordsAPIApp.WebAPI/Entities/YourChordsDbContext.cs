@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace YourChordsAPIApp.Domain.Entities;
+namespace YourChordsAPIApp.WebAPI.Entities;
 
 public partial class YourChordsDbContext : DbContext
 {
@@ -400,9 +400,14 @@ public partial class YourChordsDbContext : DbContext
             entity.Property(e => e.Dob).HasColumnType("datetime");
             entity.Property(e => e.Email).HasMaxLength(255);
             entity.Property(e => e.Image).HasMaxLength(255);
+            entity.Property(e => e.IsDeleted).HasDefaultValueSql("((0))");
+            entity.Property(e => e.IsPrivate).HasDefaultValueSql("((0))");
+            entity.Property(e => e.IsVerified).HasDefaultValueSql("((0))");
             entity.Property(e => e.PasswordHash).HasMaxLength(255);
             entity.Property(e => e.PhoneNumber).HasMaxLength(20);
-            entity.Property(e => e.Role).HasMaxLength(100);
+            entity.Property(e => e.Role)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("('Customer')");
             entity.Property(e => e.Token).HasMaxLength(255);
             entity.Property(e => e.UserName).HasMaxLength(255);
         });

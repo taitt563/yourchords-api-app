@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace YourChordsAPIApp.Domain.Entities;
+namespace YourChordsAPIApp.WebAPI.Entities;
 
 public partial class UserAccount
 {
@@ -33,7 +33,7 @@ public partial class UserAccount
 
     public bool? IsDeleted { get; set; }
 
-    public string Role { get; set; } = null!;
+    public string? Role { get; set; }
 
     public virtual ICollection<Beat> Beats { get; set; } = new List<Beat>();
 

@@ -22,11 +22,13 @@ namespace YourChordsAPIApp.Infrastructure
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), builder => builder.MigrationsAssembly(typeof(YourChordsDbContext).Assembly.FullName));
             });
 
-            services.AddTransient<IUserRoleRepository, UserRoleRepository>();
+            //services.AddTransient<IUserRoleRepository, UserRoleRepository>();
             services.AddTransient<IChordTypeRepository, ChordTypeRepository>();
-            services.AddScoped<IArtistRepository, ArtistRepository>();
-            services.AddScoped<IGenreRepository, GenreRepository>();
-            services.AddScoped<IArtistGenreRepository, ArtistGenreRepository>();
+            services.AddTransient<IArtistRepository, ArtistRepository>();
+            services.AddTransient<IGenreRepository, GenreRepository>();
+            services.AddTransient<IArtistGenreRepository, ArtistGenreRepository>();
+            services.AddTransient<IUserAccountRepository, UserAccountRepository>();
+
             return services;
         }
     }

@@ -9,61 +9,61 @@ using Microsoft.EntityFrameworkCore;
 
 namespace YourChordsAPIApp.Infrastructure.Repositories
 {
-    public class UserRoleRepository : IUserRoleRepository
-    {
-        private readonly YourChordsDbContext _context;
+    //public class UserRoleRepository : IUserRoleRepository
+    //{
+    //    private readonly YourChordsDbContext _context;
 
-        public UserRoleRepository(YourChordsDbContext context) 
-        {
-            _context = context;
-        }
-        public async Task<UserRole> CreateAsync(UserRole role)
-        {
-            await _context.UserRoles.AddAsync(role);
-            await _context.SaveChangesAsync();
-            return role;
-        }
+    //    public UserRoleRepository(YourChordsDbContext context) 
+    //    {
+    //        _context = context;
+    //    }
+    //    public async Task<UserRole> CreateAsync(UserRole role)
+    //    {
+    //        await _context.UserRoles.AddAsync(role);
+    //        await _context.SaveChangesAsync();
+    //        return role;
+    //    }
 
-        public async Task<int> DeleteAsync(int id)
-        {
-            var role = await _context.UserRoles.FirstOrDefaultAsync(model => model.Id == id);
+    //    public async Task<int> DeleteAsync(int id)
+    //    {
+    //        var role = await _context.UserRoles.FirstOrDefaultAsync(model => model.Id == id);
 
-            if (role != null)
-            {
-                _context.UserRoles.Remove(role);
-                await _context.SaveChangesAsync();
-                return 1; 
-            }
+    //        if (role != null)
+    //        {
+    //            _context.UserRoles.Remove(role);
+    //            await _context.SaveChangesAsync();
+    //            return 1; 
+    //        }
 
-            return 0;
-        }
+    //        return 0;
+    //    }
 
-        public async Task<List<UserRole>> GetAllBlogAsync()
-        {
-            return await _context.UserRoles.ToListAsync();
-        }
+    //    public async Task<List<UserRole>> GetAllBlogAsync()
+    //    {
+    //        return await _context.UserRoles.ToListAsync();
+    //    }
 
-        public async Task<UserRole> GetByIdAsync(int id)
-        {
-            return await _context.UserRoles!.FindAsync(id);
-        }
+    //    public async Task<UserRole> GetByIdAsync(int id)
+    //    {
+    //        return await _context.UserRoles!.FindAsync(id);
+    //    }
 
-        public async Task<int> UpdateAsync(int id, UserRole role)
-        {
-            var existingRole = await _context.UserRoles.FirstOrDefaultAsync(r => r.Id == id);
+    //    public async Task<int> UpdateAsync(int id, UserRole role)
+    //    {
+    //        var existingRole = await _context.UserRoles.FirstOrDefaultAsync(r => r.Id == id);
 
-            if (existingRole != null)
-            {
-                existingRole.RoleName = role.RoleName;
-                existingRole.Description = role.Description;
+    //        if (existingRole != null)
+    //        {
+    //            existingRole.RoleName = role.RoleName;
+    //            existingRole.Description = role.Description;
 
-                await _context.SaveChangesAsync();
+    //            await _context.SaveChangesAsync();
 
-                return 1; 
-            }
+    //            return 1; 
+    //        }
 
-            return 0;
+    //        return 0;
 
-        }
-    }
+    //    }
+    //}
 }

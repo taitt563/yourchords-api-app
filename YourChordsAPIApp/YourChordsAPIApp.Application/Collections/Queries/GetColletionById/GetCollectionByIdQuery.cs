@@ -10,6 +10,6 @@ namespace YourChordsAPIApp.Application.Collections.Queries.GetColletionById
 {
     public class GetCollectionByIdQuery : IRequest<CollectionDto>
     {
-        public int Id { get; set; }
+        public int CollectionId { get; set; }
     }
 }

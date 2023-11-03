@@ -32,6 +32,7 @@ namespace YourChordsAPIApp.Infrastructure
             services.AddTransient<IArtistGenreRepository, ArtistGenreRepository>();
             services.AddTransient<IUserAccountRepository, UserAccountRepository>();
             services.AddTransient<ICollectionRepository, CollectionRepository>();
+            services.AddTransient<IInstrumentRepository, InstrumentRepository>();
 
             services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 

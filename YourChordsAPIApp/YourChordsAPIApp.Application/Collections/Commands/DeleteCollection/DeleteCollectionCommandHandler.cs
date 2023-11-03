@@ -21,7 +21,7 @@ namespace YourChordsAPIApp.Application.Collections.Commands.DeleteCollection
         }
         public async Task<Unit> Handle(DeleteCollectionCommand request, CancellationToken cancellationToken)
         {
-            var collection = await _collectionRepository.GetByIdAsync(request.Id);
+            var collection = await _collectionRepository.GetByIdAsync(request.CollectionId);
 
             if (collection == null)
             {

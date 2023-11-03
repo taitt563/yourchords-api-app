@@ -22,7 +22,7 @@ namespace YourChordsAPIApp.Application.Collections.Queries.GetColletionById
         }
         public async Task<CollectionDto> Handle(GetCollectionByIdQuery request, CancellationToken cancellationToken)
         {
-            var collection = await _collectionRepository.GetByIdAsync(request.Id);
+            var collection = await _collectionRepository.GetByIdAsync(request.CollectionId);
 
             if (collection == null)
             {

@@ -9,7 +9,9 @@ using YourChordsAPIApp.Application.Collections.Commands.UpdateCollection;
 using YourChordsAPIApp.Application.Collections.Queries.Dtos;
 using YourChordsAPIApp.Application.Collections.Queries.GetAllCollectionsByUser;
 using YourChordsAPIApp.Application.Collections.Queries.GetColletionById;
+using YourChordsAPIApp.Domain.Entities;
 using YourChordsAPIApp.Domain.Repositories;
+using YourChordsAPIApp.WebAPI.Models.CollectionModel;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace YourChordsAPIApp.WebAPI.Controllers
@@ -21,25 +23,30 @@ namespace YourChordsAPIApp.WebAPI.Controllers
     {
         // POST api/collections
         [HttpPost]
-        public async Task<ActionResult<CollectionDto>> Create(CreateCollectionCommand command)
+        public async Task<ActionResult<CollectionDto>> Create([FromBody] CollectionModel model)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
-                return BadRequest(new { message = "Invalid token. User not found." });
-            }
-            command.UserId = int.Parse(userId);
-            // DateCreated will be set in the handler, not here
-            var result = await Mediator.Send(command);
+                return Unauthorized("User ID claim is missing from the token.");
+            }  // Set UserId in command from the token
+            var result = await Mediator.Send(new CreateCollectionCommand
+            {
+                UserId = int.Parse(userId.Value),
+                CollectionName = model.CollectionName,
+                Image = model.Image,
+                IsPrivate = model.IsPrivate,
+                DateCreated = DateTime.UtcNow
+            });
+
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
         // PUT api/collections/5
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, UpdateCollectionCommand command)
+        [HttpPut("{collectionId}")]
+        public async Task<ActionResult> Update(int collectionId, UpdateCollectionCommand command)
         {
-            if (id != command.Id)
+            if (collectionId != command.CollectionId)
             {
                 return BadRequest();
             }
@@ -50,10 +57,10 @@ namespace YourChordsAPIApp.WebAPI.Controllers
         }
 
         // GET api/collections/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<CollectionDto>> GetById(int id)
+        [HttpGet("{collectionId}")]
+        public async Task<ActionResult<CollectionDto>> GetById(int collectionId)
         {
-            var query = new GetCollectionByIdQuery { Id = id };
+            var query = new GetCollectionByIdQuery { CollectionId = collectionId };
             var result = await Mediator.Send(query);
             if (result == null)
             {
@@ -78,11 +85,11 @@ namespace YourChordsAPIApp.WebAPI.Controllers
         }
 
         // DELETE api/collections/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        [HttpDelete("{collectionId}")]
+        public async Task<ActionResult> Delete(int collectionId)
         {
             // You can check here if the collection belongs to the user from the JWT token if needed
-            var command = new DeleteCollectionCommand { Id = id };
+            var command = new DeleteCollectionCommand { CollectionId = collectionId };
             await Mediator.Send(command);
             return NoContent();
         }

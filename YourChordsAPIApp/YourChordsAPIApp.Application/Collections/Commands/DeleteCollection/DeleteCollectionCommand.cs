@@ -9,6 +9,6 @@ namespace YourChordsAPIApp.Application.Collections.Commands.DeleteCollection
 {
     public class DeleteCollectionCommand : IRequest<Unit>
     {
-        public int Id { get; set; }
+        public int CollectionId { get; set; }
     }
 }

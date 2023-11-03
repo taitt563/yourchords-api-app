@@ -15,6 +15,7 @@ namespace YourChordsAPIApp.Application.Collections.Commands.CreateCollecion
         public int UserId { get; set; }
         public string CollectionName { get; set; }
         public string? Image { get; set; }
+        public DateTime DateCreated { get; set; }
         public bool IsPrivate { get; set; }
     }
 }

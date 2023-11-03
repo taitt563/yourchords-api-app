@@ -23,7 +23,7 @@ namespace YourChordsAPIApp.Application.Collections.Commands.UpdateCollection
 
         public async Task<CollectionDto> Handle(UpdateCollectionCommand request, CancellationToken cancellationToken)
         {
-            var existingCollection = await _collectionRepository.GetByIdAsync(request.Id);
+            var existingCollection = await _collectionRepository.GetByIdAsync(request.CollectionId);
 
             if (existingCollection == null)
             {

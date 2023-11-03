@@ -26,15 +26,19 @@ namespace YourChordsAPIApp.Application.Collections.Commands.CreateCollecion
 
         public async Task<CollectionDto> Handle(CreateCollectionCommand request, CancellationToken cancellationToken)
         {
-            // Extract user id from JWT token
-            var collection = new Collection();
-            collection.CollectionName = request.CollectionName;
-            collection.UserId = request.UserId;
-            collection.Image = request.Image;
-            collection.IsPrivate = request.IsPrivate;
-            collection.DateCreated = DateTime.UtcNow; // Or your preferred time zone
+            var collection = new Collection
+            {
+                UserId = request.UserId,
+                CollectionName = request.CollectionName,
+                Image = request.Image,
+                IsPrivate = request.IsPrivate,
+                DateCreated = request.DateCreated
+            };
 
-            collection = await _collectionRepository.AddAsync(collection);
+            // The UserId should be set just before adding the collection to the repository, like so:
+            // collection.UserId = userId; (this will be passed into the handler)
+
+            await _collectionRepository.AddAsync(collection);
 
             return _mapper.Map<CollectionDto>(collection);
         }

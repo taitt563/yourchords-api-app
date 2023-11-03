@@ -61,7 +61,7 @@ public partial class YourChordsDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=yourchordsdbserver.database.windows.net,1433;Initial Catalog=YourChordsDB;Persist Security Info=False;User ID=yourchords;Password=admin@123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+        => optionsBuilder.UseSqlServer("Server=tcp:yourchordsdbserver.database.windows.net,1433;Initial Catalog=YourChordsDB;Persist Security Info=False;User ID=yourchords;Password=admin@123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -405,7 +405,6 @@ public partial class YourChordsDbContext : DbContext
             entity.Property(e => e.PasswordHash).HasMaxLength(255);
             entity.Property(e => e.PhoneNumber).HasMaxLength(20);
             entity.Property(e => e.Role).HasMaxLength(100);
-            entity.Property(e => e.Token).HasMaxLength(255);
         });
 
         modelBuilder.Entity<UserLikedSong>(entity =>

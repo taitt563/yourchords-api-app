@@ -23,7 +23,6 @@ namespace YourChordsAPIApp.Application
                 //validation
                 ctg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             });
-
             return services;
         }
     }

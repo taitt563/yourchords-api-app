@@ -35,6 +35,12 @@ namespace YourChordsAPIApp.Infrastructure.Repositories
             {
                 throw new Exception("Email already exists.");
             }
+
+            if (password != confirmPassword)
+            {
+                throw new Exception("Password and confirm password do not match.");
+            }
+
             var userAccount = new UserAccount
             {
                 Email = email,

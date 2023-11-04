@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using YourChordsAPIApp.Domain.Common;
 using YourChordsAPIApp.Domain.Entities;
 
 namespace YourChordsAPIApp.Domain.Repositories
@@ -11,12 +12,14 @@ namespace YourChordsAPIApp.Domain.Repositories
     public interface IChordRepository
     {
         // Basic CRUD operations
-        Task<Chord> GetByIdAsync(int id);
-        Task<IEnumerable<Chord>> GetAllAsync();
+        Task<Chord> GetChordByIdAsync(int chordId);
+        Task<IEnumerable<Chord>> GetAllAsync(int page, int pageSize, ChordFilter filter);
         Task<IEnumerable<Chord>> FindAsync(Expression<Func<Chord, bool>> predicate);
-        Task<Chord> AddAsync(Chord chord);
-        Task UpdateAsync(Chord chord);
-        Task DeleteAsync(Chord chord);
+        Task<Chord> AddChordAsync(Chord chord);
+        Task UpdateChordAsync(Chord chord);
+        Task<Chord> GetChordByIdForUpdateAsync(int chordId);
+        Task DeleteChordAsync(Chord chord);
+        Task DeleteChordByIdAsync(int chordId);
 
         // Batch operations
         Task AddRangeAsync(IEnumerable<Chord> chords);
@@ -46,7 +49,5 @@ namespace YourChordsAPIApp.Domain.Repositories
 
         // Authorization and access control
         Task<bool> CanUserModifyChordAsync(int userId, int chordId);
-
-        // Etc...
     }
 }

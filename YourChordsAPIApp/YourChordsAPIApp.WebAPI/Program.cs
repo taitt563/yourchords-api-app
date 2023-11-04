@@ -61,6 +61,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment()|| app.Environment.IsProduction())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
@@ -68,6 +69,10 @@ if (app.Environment.IsDevelopment()|| app.Environment.IsProduction())
         options.RoutePrefix = string.Empty;
     });
 
+}
+else
+{
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();

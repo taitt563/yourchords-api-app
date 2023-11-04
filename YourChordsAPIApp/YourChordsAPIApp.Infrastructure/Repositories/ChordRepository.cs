@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using YourChordsAPIApp.Domain.Common;
 using YourChordsAPIApp.Domain.Entities;
 using YourChordsAPIApp.Domain.Repositories;
 
@@ -19,42 +20,187 @@ namespace YourChordsAPIApp.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<Chord> GetByIdAsync(int id)
+        public async Task<Chord> GetChordByIdAsync(int chordId)
         {
-            return await _context.Chords.FindAsync(id);
+            try
+            {
+                return await _context.Chords
+                    .FindAsync(chordId);
+            }
+            catch (Exception ex)
+            {
+                // Handle or log the exception as needed
+                throw new ApplicationException("An error occurred when getting the chord by ID.", ex);
+            }
         }
 
-        public async Task<IEnumerable<Chord>> GetAllAsync()
+        public async Task<IEnumerable<Chord>> GetAllAsync(int page, int pageSize, ChordFilter filter)
         {
-            return await _context.Chords.ToListAsync();
+            try
+            {
+                IQueryable<Chord> query = _context.Chords;
+
+                // Apply filters
+                if (!string.IsNullOrEmpty(filter.NameContains))
+                {
+                    query = query.Where(c => c.ChordName.Contains(filter.NameContains));
+                }
+
+                if (!string.IsNullOrEmpty(filter.Tone))
+                {
+                    query = query.Where(c => c.Tone == filter.Tone);
+                }
+
+                if (filter.TypeId.HasValue)
+                {
+                    query = query.Where(c => c.TypeId == filter.TypeId.Value);
+                }
+
+                if (filter.InstrumentId.HasValue)
+                {
+                    query = query.Where(c => c.InstrumentId == filter.InstrumentId.Value);
+                }
+
+                if (filter.CreatedAfter.HasValue)
+                {
+                    query = query.Where(c => c.CreatedAt >= filter.CreatedAfter.Value);
+                }
+
+                if (filter.CreatedBefore.HasValue)
+                {
+                    query = query.Where(c => c.CreatedAt <= filter.CreatedBefore.Value);
+                }
+
+                if (filter.CreatedBy.HasValue)
+                {
+                    query = query.Where(c => c.CreatedBy == filter.CreatedBy.Value);
+                }
+
+                if (filter.IsPrivate.HasValue)
+                {
+                    query = query.Where(c => c.IsPrivate == filter.IsPrivate.Value);
+                }
+
+                if (filter.IsVerified.HasValue)
+                {
+                    query = query.Where(c => c.IsVerified == filter.IsVerified.Value);
+                }
+
+                if (filter.IsDeleted.HasValue)
+                {
+                    query = query.Where(c => c.IsDeleted == filter.IsDeleted.Value);
+                }
+                var chords = await query
+                    .Where(c => !c.IsDeleted) 
+                    .OrderBy(c => c.Id) // Apply some sorting
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                return chords;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred when getting all chords.", ex);
+            }
         }
+
 
         public async Task<IEnumerable<Chord>> FindAsync(Expression<Func<Chord, bool>> predicate)
         {
-            return await _context.Chords.Where(predicate).ToListAsync();
+            try
+            {
+                return await _context.Chords.Where(predicate).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle or log the exception as needed
+                throw new ApplicationException("An error occurred when finding chords.", ex);
+            }
         }
 
-        public async Task<Chord> AddAsync(Chord chord)
+        public async Task<Chord> AddChordAsync(Chord chord)
         {
-            _context.Chords.Add(chord);
-            await _context.SaveChangesAsync();
-            return chord;
+            try
+            {
+                _context.Chords.Add(chord);
+                await _context.SaveChangesAsync();
+                return chord;
+            }
+            catch (Exception ex)
+            {
+                // Handle or log the exception as needed
+                throw new ApplicationException("An error occurred when adding a new chord.", ex);
+            }
         }
 
-        public async Task UpdateAsync(Chord chord)
+        public async Task UpdateChordAsync(Chord chord)
         {
-            _context.Entry(chord).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Entry(chord).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle or log the exception as needed
+                throw new ApplicationException("An error occurred when updating the chord.", ex);
+            }
         }
 
-        public async Task DeleteAsync(Chord chord)
+        public async Task<Chord> GetChordByIdForUpdateAsync(int chordId)
         {
-            _context.Chords.Remove(chord);
-            await _context.SaveChangesAsync();
+            try
+            {
+                return await _context.Chords.SingleOrDefaultAsync(c => c.Id == chordId && !c.IsDeleted);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception here if needed
+                throw new ApplicationException($"An error occurred when trying to retrieve chord with ID {chordId}.", ex);
+            }
         }
 
-        // Implement other methods similarly, for example:
-
+        public async Task DeleteChordAsync(Chord chord)
+        {
+            try
+            {
+                chord.IsDeleted = true;
+                _context.Entry(chord).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                throw new ApplicationException("A concurrency error happened while attempting to delete a chord.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred when deleting the chord.", ex);
+            }
+        }
+        public async Task DeleteChordByIdAsync(int chordId)
+        {
+            try
+            {
+                Chord chordToDelete = await GetChordByIdForUpdateAsync(chordId);
+                if (chordToDelete != null)
+                {
+                    await DeleteChordAsync(chordToDelete);
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"A chord with the ID {chordId} was not found or is already deleted.");
+                }
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred when trying to delete the chord.", ex);
+            }
+        }
         // Batch operations
         public async Task AddRangeAsync(IEnumerable<Chord> chords)
         {

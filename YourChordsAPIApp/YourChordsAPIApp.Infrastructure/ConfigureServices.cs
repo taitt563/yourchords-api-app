@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using YourChordsAPIApp.Domain.Entities;
 using YourChordsAPIApp.Domain.Repositories;
@@ -33,6 +34,8 @@ namespace YourChordsAPIApp.Infrastructure
             services.AddTransient<IUserAccountRepository, UserAccountRepository>();
             services.AddTransient<ICollectionRepository, CollectionRepository>();
             services.AddTransient<IInstrumentRepository, InstrumentRepository>();
+            services.AddTransient<IChordRepository, ChordRepository>();
+
 
             services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 

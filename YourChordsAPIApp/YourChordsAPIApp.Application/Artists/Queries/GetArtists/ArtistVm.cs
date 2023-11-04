@@ -20,11 +20,14 @@ namespace YourChordsAPIApp.Application.Artists.Queries.GetArtists
         public string? ProfilePic { get; set; }
         public string? ExternalLink { get; set; }
         public int? Popularity { get; set; }
+        public List<string>? Genres { get; set; }
 
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Artist, ArtistVm>()
-                .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Dob.HasValue ? src.Dob.Value.ToString("yyyy-MM-dd") : ""));
+                .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Dob.HasValue ? src.Dob.Value.ToString("yyyy-MM-dd") : ""))
+                .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.ArtistGenres.Select(ag => ag.Genre.GenreName)));
+
         }
     }
 }

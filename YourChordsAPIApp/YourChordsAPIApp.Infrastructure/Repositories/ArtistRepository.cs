@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YourChordsAPIApp.Application.Artists.Queries.GetArtists;
 using YourChordsAPIApp.Domain.Entities;
 using YourChordsAPIApp.Domain.Repositories;
 
@@ -20,7 +21,14 @@ namespace YourChordsAPIApp.Infrastructure.Repositories
 
         public async Task<Artist> GetArtistByIdAsync(int artistId)
         {
-            return await _context.Artists.FindAsync(artistId);
+            // Fetch the artist including related genres
+            var artist = await _context.Artists
+                .Include(a => a.ArtistGenres)
+                .ThenInclude(ag => ag.Genre)
+                .SingleOrDefaultAsync(a => a.Id == artistId);
+
+
+            return artist;
         }
 
         public async Task<Artist> GetArtistByNameAsync(string artistName)

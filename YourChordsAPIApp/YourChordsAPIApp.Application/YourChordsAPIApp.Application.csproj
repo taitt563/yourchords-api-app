@@ -8,6 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Chords\Commands\" />
+    <Folder Include="Chords\Dtos\" />
+    <Folder Include="Chords\Queries\" />
     <Folder Include="Common\Exceptions\" />
   </ItemGroup>
 
